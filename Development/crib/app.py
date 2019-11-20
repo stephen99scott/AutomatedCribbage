@@ -7,9 +7,9 @@ import numpy as np
 
 
 class Card:
-    def __init__(self):
-        self.num = random.randint(2, 14)
-        self.suit = random.randint(1, 4)
+    def __init__(self, num=0, suit=0):
+        self.num = num
+        self.suit = suit
 
 
 class Hand:
@@ -18,14 +18,23 @@ class Hand:
         self.cards = []
         self.cardsInHand = np.zeros((4, 13))
 
+    def deleteHand(self):
+        self.handSize = 0
+        self.cards = []
+        self.cardsInHand = np.zeros((4, 13))
+
     def getHandSize(self):
         print(self.handSize)
 
-    def createHand(self):
+    def generateHand(self):
         for i in range(self.handSize):
             card = Card()
+            card.num = random.randint(2, 14)
+            card.suit = random.randint(1, 4)
             while self.cardsInHand[card.suit - 1][card.num - 2] == 1:
                 card = Card()
+                card.num = random.randint(2, 14)
+                card.suit = random.randint(1, 4)
             self.cardsInHand[card.suit - 1][card.num - 2] += 1
             self.cards.append(card)
 
@@ -42,7 +51,6 @@ class Hand:
                     print("Suit:\tClubs\t\t\tValue:\tAce")
                 else:
                     print("Suit:\tClubs\t\t\tValue:\t", self.cards[i].num)
-
             elif self.cards[i].suit == 2:
                 if self.cards[i].num == 11:
                     print("Suit:\tDiamonds\t\tValue:\tJack")
@@ -76,14 +84,31 @@ class Hand:
                     print("Suit:\tSpades\t\t\tValue:\tAce")
                 else:
                     print("Suit:\tSpades\t\t\tValue:\t", self.cards[i].num)
+        print(self.cardsInHand)
+
+    def sendHand(self, cardsSent=[]):
+        for card in cardsSent:
+            if card.num > 14 or card.num < 2 or card.suit > 4 or card.suit < 1:
+                print("###CARD NUM OR SUIT EXCEEDS RANGE###")
+                self.deleteHand()
+                print("########HAND NOT INITIALIZED########")
+                return
+            elif self.cardsInHand[card.suit - 1][card.num - 2] == 1:
+                print("######DUPLICATE CARD NOT ADDED######")
+                self.deleteHand()
+                print("########HAND NOT INITIALIZED########")
+                return
+            else:
+                self.cardsInHand[card.suit - 1][card.num - 2] += 1
+                self.cards.append(card)
 
 
 def main():
-    newHand = Hand(52)
-    newHand.getHandSize()
-    newHand.createHand()
-    newHand.viewHand()
-    print(newHand.cardsInHand)
+    cards = [Card(14, 4), Card(3, 3), Card(4, 2), Card(6, 1)]
+    test = Hand(len(cards))
+    test.sendHand(cards)
+    test.getHandSize()
+    test.viewHand()
 
 
 main()
