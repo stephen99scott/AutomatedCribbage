@@ -16,17 +16,17 @@ class Card:
 
 class Hand:
     def __init__(self, handSize):
-        self.handSize = handSize
-        self.cards = []
-        self.cardsInHand = np.zeros((4, 13))
+        self.cardsInHand = np.zeros((4, 13))  # Counts the instances of each card
+        self.handSize = handSize  # Init the hand with a size
+        self.cards = []  # Init empty array of card objects
+        self.nums = []  # Init empty array of card.num values
+        self.numOfSuit = np.zeros(4)  # Counts the instances of each suit
+        self.score = 0  # Final output score from a hand
 
     def deleteHand(self):
         self.handSize = 0
         self.cards = []
         self.cardsInHand = np.zeros((4, 13))
-
-    def getHandSize(self):
-        print(self.handSize)
 
     def generateHand(self):
         for i in range(self.handSize):
@@ -39,59 +39,14 @@ class Hand:
                 card.suit = random.randint(1, 4)
             self.cardsInHand[card.suit - 1][card.num - 2] += 1
             self.cards.append(card)
+            self.nums.append(card.num)
+            self.numOfSuit[card.suit - 1] += 1
 
     def viewHand(self):
+        suit_names = ["", "Clubs", "Diamonds", "Hearts", "Spades"]
+        card_names = ["", "", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King", "Ace"]
         for i in range(self.handSize):
-            # An easier-to-read version of the card can be found by using suit_names and card_names
-            suit_names = ["", "Clubs", "Diamonds", "Hearts", "Spades"]
-            card_names = ["", "", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King", "Ace"]
             print("Value:\t" + card_names[self.cards[i].num] + "\t\t\tSuit:\t" + suit_names[self.cards[i].suit])
-            '''
-            if self.cards[i].suit == 1:
-                if self.cards[i].num == 11:
-                    print("Suit:\tClubs\t\t\tValue:\tJack")
-                elif self.cards[i].num == 12:
-                    print("Suit:\tClubs\t\t\tValue:\tQueen")
-                elif self.cards[i].num == 13:
-                    print("Suit:\tClubs\t\t\tValue:\tKing")
-                elif self.cards[i].num == 14:
-                    print("Suit:\tClubs\t\t\tValue:\tAce")
-                else:
-                    print("Suit:\tClubs\t\t\tValue:\t", self.cards[i].num)
-            elif self.cards[i].suit == 2:
-                if self.cards[i].num == 11:
-                    print("Suit:\tDiamonds\t\tValue:\tJack")
-                elif self.cards[i].num == 12:
-                    print("Suit:\tDiamonds\t\tValue:\tQueen")
-                elif self.cards[i].num == 13:
-                    print("Suit:\tDiamonds\t\tValue:\tKing")
-                elif self.cards[i].num == 14:
-                    print("Suit:\tDiamonds\t\tValue:\tAce")
-                else:
-                    print("Suit:\tDiamonds\t\tValue:\t", self.cards[i].num)
-            elif self.cards[i].suit == 3:
-                if self.cards[i].num == 11:
-                    print("Suit:\tHearts\t\t\tValue:\tJack")
-                elif self.cards[i].num == 12:
-                    print("Suit:\tHearts\t\t\tValue:\tQueen")
-                elif self.cards[i].num == 13:
-                    print("Suit:\tHearts\t\t\tValue:\tKing")
-                elif self.cards[i].num == 14:
-                    print("Suit:\tHearts\t\t\tValue:\tAce")
-                else:
-                    print("Suit:\tHearts\t\t\tValue:\t", self.cards[i].num)
-            else:
-                if self.cards[i].num == 11:
-                    print("Suit:\tSpades\t\t\tValue:\tJack")
-                elif self.cards[i].num == 12:
-                    print("Suit:\tSpades\t\t\tValue:\tQueen")
-                elif self.cards[i].num == 13:
-                    print("Suit:\tSpades\t\t\tValue:\tKing")
-                elif self.cards[i].num == 14:
-                    print("Suit:\tSpades\t\t\tValue:\tAce")
-                else:
-                    print("Suit:\tSpades\t\t\tValue:\t", self.cards[i].num)
-                    '''
         print(self.cardsInHand)
 
     def sendHand(self, cardsSent=[]):
@@ -109,14 +64,31 @@ class Hand:
             else:
                 self.cardsInHand[card.suit - 1][card.num - 2] += 1
                 self.cards.append(card)
+                self.nums.append(card.num)
+                self.numOfSuit[card.suit - 1] += 1
+
+    def scoreHand(self):
+        # If 4 or more of one suit in a hand, then add 4 or more to the score
+        for num in self.numOfSuit:
+            if num < 4:
+                continue
+            else:
+                self.score += int(num)
+        # For each combination of 15 in a hand, add 2 to score
+        # some code
+        # If 3 or more consecutive nums in a hand, add 3 or more to score
+        # some code
+        # If pair of num in hand, add 2, if 3pair add 6, if 4pair add 12
+        # some code
 
 
 def main():
-    cards = [Card(14, 4), Card(3, 3), Card(4, 2), Card(6, 1)]
+    cards = [Card(14, 2), Card(5, 2), Card(8, 2), Card(9, 2)]
     test = Hand(len(cards))
     test.sendHand(cards)
-    test.getHandSize()
     test.viewHand()
+    test.scoreHand()
+    print(test.score)
 
 
 main()
