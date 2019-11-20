@@ -1,5 +1,7 @@
 # Author: Stephen Scott
 # Date: November 19, 2019
+# Description: Used to analyze an input hand of cards and output a cribbage score
+# Filename: app.py
 
 
 import random
