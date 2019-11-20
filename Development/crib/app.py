@@ -42,6 +42,11 @@ class Hand:
 
     def viewHand(self):
         for i in range(self.handSize):
+            # An easier-to-read version of the card can be found by using suit_names and card_names
+            suit_names = ["", "Clubs", "Diamonds", "Hearts", "Spades"]
+            card_names = ["", "", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King", "Ace"]
+            print("Value:\t" + card_names[self.cards[i].num] + "\t\t\tSuit:\t" + suit_names[self.cards[i].suit])
+            '''
             if self.cards[i].suit == 1:
                 if self.cards[i].num == 11:
                     print("Suit:\tClubs\t\t\tValue:\tJack")
@@ -86,6 +91,7 @@ class Hand:
                     print("Suit:\tSpades\t\t\tValue:\tAce")
                 else:
                     print("Suit:\tSpades\t\t\tValue:\t", self.cards[i].num)
+                    '''
         print(self.cardsInHand)
 
     def sendHand(self, cardsSent=[]):
