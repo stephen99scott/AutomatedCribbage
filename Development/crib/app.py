@@ -68,22 +68,44 @@ class Hand:
                 self.numOfSuit[card.suit - 1] += 1
 
     def scoreHand(self):
-        # If 4 or more of one suit in a hand, then add 4 or more to the score
+        # If 4 or more of a suit in a hand then add 4 or more to score
         for num in self.numOfSuit:
             if num < 4:
                 continue
             else:
                 self.score += int(num)
-        # For each combination of 15 in a hand, add 2 to score
-        # some code
-        # If 3 or more consecutive nums in a hand, add 3 or more to score
-        # some code
-        # If pair of num in hand, add 2, if 3pair add 6, if 4pair add 12
-        # some code
+        self.nums.sort()  # Sort the value of the cards
+        currentRun = 1
+        maxRun = 1
+        multiplier = 1
+        pairs = 0
+        for num in range(self.handSize):
+            if num + 1 < self.handSize:
+                if self.nums[num] == 2 and self.nums[self.handSize - 1] == 14:
+                    currentRun = 2
+                if self.nums[num + 1] == self.nums[num]:
+                    multiplier += 1
+                    pairs += 1
+                else:
+                    if pairs == 1:
+                        self.score += 2
+                    elif pairs == 2:
+                        self.score += 6
+                    elif pairs == 3:
+                        self.score += 12
+                    pairs = 0
+                if self.nums[num + 1] == self.nums[num] + 1:
+                    currentRun += 1
+                else:
+                    currentRun = 1
+            if currentRun > maxRun:
+                maxRun = currentRun
+        if maxRun > 2:
+            self.score += maxRun * multiplier
 
 
 def main():
-    cards = [Card(14, 2), Card(5, 2), Card(8, 2), Card(9, 2)]
+    cards = [Card(3, 2), Card(3, 3), Card(3, 4), Card(4, 2), Card(5, 4)]
     test = Hand(len(cards))
     test.sendHand(cards)
     test.viewHand()
