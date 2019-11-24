@@ -6,6 +6,7 @@
 
 import random
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 class Card:
@@ -20,6 +21,8 @@ class Hand:
         self.handSize = handSize  # Init the hand with a size
         self.cards = []  # Init empty array of card objects
         self.nums = []  # Init empty array of card.num values
+        self.sortedNums = []  # Init empty array to hold sorted nums
+        self.sortedNumsReducedFaceValue = []  # Make face cards have a value of 10, aces have a value of 1
         self.numOfSuit = np.zeros(4)  # Counts the instances of each suit
         self.score = 0  # Final output score from a hand
 
@@ -46,7 +49,9 @@ class Hand:
         suit_names = ["", "Clubs", "Diamonds", "Hearts", "Spades"]
         card_names = ["", "", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King", "Ace"]
         for i in range(self.handSize):
-            print("Value:\t" + card_names[self.cards[i].num] + "\t\t\tSuit:\t" + suit_names[self.cards[i].suit])
+            print("Card:\t" + card_names[self.cards[i].num] + ", " + suit_names[self.cards[i].suit])
+
+    def viewDeck(self):
         print(self.cardsInHand)
 
     def sendHand(self, cardsSent=[]):
@@ -67,50 +72,104 @@ class Hand:
                 self.nums.append(card.num)
                 self.numOfSuit[card.suit - 1] += 1
 
-    def scoreHand(self):
-        # If 4 or more of a suit in a hand then add 4 or more to score
+    def sortNums(self):
+        for num in range(self.handSize):
+            self.sortedNums.append(self.nums[num])
+        self.sortedNums.sort()
+
+    def reduceFaceValue(self):
+        for num in range(self.handSize):
+            if self.nums[num] == 14:
+                self.sortedNumsReducedFaceValue.append(1)
+            elif 14 > self.nums[num] > 10:
+                self.sortedNumsReducedFaceValue.append(10)
+            else:
+                self.sortedNumsReducedFaceValue.append(self.nums[num])
+        self.sortedNumsReducedFaceValue.sort()
+
+    def checkPairs(self):
+        pairs = 0
+        for num in range(self.handSize - 1):
+            if self.sortedNums[num + 1] == self.sortedNums[num]:
+                pairs += 1
+            else:
+                self.score = self.score + pairs * (pairs + 1)
+                pairs = 0
+        self.score = self.score + pairs * (pairs + 1)
+
+    def checkFlush(self):
         for num in self.numOfSuit:
             if num < 4:
                 continue
             else:
                 self.score += int(num)
-        self.nums.sort()  # Sort the value of the cards
+
+    def checkRuns(self):
         currentRun = 1
         maxRun = 1
         multiplier = 1
-        pairs = 0
-        for num in range(self.handSize):
-            if num + 1 < self.handSize:
-                if self.nums[num] == 2 and self.nums[self.handSize - 1] == 14:
-                    currentRun = 2
-                if self.nums[num + 1] == self.nums[num]:
-                    multiplier += 1
-                    pairs += 1
-                else:
-                    if pairs == 1:
-                        self.score += 2
-                    elif pairs == 2:
-                        self.score += 6
-                    elif pairs == 3:
-                        self.score += 12
-                    pairs = 0
-                if self.nums[num + 1] == self.nums[num] + 1:
-                    currentRun += 1
-                else:
-                    currentRun = 1
-            if currentRun > maxRun:
+        for num in range(self.handSize - 1):
+            if self.sortedNums[self.handSize - 1] == 14 and self.sortedNums[0] == 2:
+                currentRun += 1
+                continue
+            elif self.sortedNums[num + 1] == self.sortedNums[num]:
+                multiplier *= 2
+                continue
+            elif self.sortedNums[num + 1] == self.sortedNums[num] + 1 and self.sortedNums[num + 1] != 14:
+                currentRun += 1
+                continue
+            elif currentRun > maxRun:
                 maxRun = currentRun
+            currentRun = 1
+            multiplier = 1
+        if currentRun > maxRun:
+            maxRun = currentRun
         if maxRun > 2:
             self.score += maxRun * multiplier
 
+    def checkFifteenTwos(self, numbers, target, partial=[]):
+        s = sum(partial)
+        # check if the partial sum is equals to target
+        if s == target:
+            self.score += 2
+        if s >= target:
+            return  # if we reach the number why bother to continue
+
+        for i in range(len(numbers)):
+            n = numbers[i]
+            remaining = numbers[i + 1:]
+            self.checkFifteenTwos(remaining, target, partial + [n])
+
+    def scoreHand(self):
+        self.sortNums()
+        self.reduceFaceValue()
+        self.checkPairs()
+        self.checkFlush()
+        self.checkRuns()
+        self.checkFifteenTwos(self.sortedNumsReducedFaceValue, 15)
+
 
 def main():
-    cards = [Card(3, 2), Card(3, 3), Card(3, 4), Card(4, 2), Card(5, 4)]
+    '''cards = [Card(14, 4), Card(9, 3), Card(3, 1), Card(6, 1), Card(5, 4)]
     test = Hand(len(cards))
     test.sendHand(cards)
     test.viewHand()
     test.scoreHand()
-    print(test.score)
+    print("Score: ", test.score)'''
+    count = 0
+    total = 10000
+    scores = np.zeros(29)
+    while count < total:
+        hand = Hand(5)
+        hand.generateHand()
+        hand.scoreHand()
+        scores[hand.score] += 1
+        count += 1
+    print(scores)
+
+    plt.plot(scores/total)
+    plt.title("Score of Cribbage Hands")
+    plt.show()
 
 
 main()
