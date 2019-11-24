@@ -79,25 +79,25 @@ class Hand:
         maxRun = 1
         multiplier = 1
         pairs = 0
-        for num in range(self.handSize):
-            if num + 1 < self.handSize:
-                if self.nums[num] == 2 and self.nums[self.handSize - 1] == 14:
-                    currentRun = 2
-                if self.nums[num + 1] == self.nums[num]:
-                    multiplier += 1
-                    pairs += 1
-                else:
-                    if pairs == 1:
-                        self.score += 2
-                    elif pairs == 2:
-                        self.score += 6
-                    elif pairs == 3:
-                        self.score += 12
-                    pairs = 0
-                if self.nums[num + 1] == self.nums[num] + 1:
-                    currentRun += 1
-                else:
-                    currentRun = 1
+        for num in range(self.handSize-1):
+            #if num + 1 < self.handSize:
+            if self.nums[num] == 2 and self.nums[self.handSize - 1] == 14:
+                currentRun = 2
+            if self.nums[num + 1] == self.nums[num]:
+                multiplier += 1
+                pairs += 1
+            else:
+                if pairs == 1:
+                    self.score += 2
+                elif pairs == 2:
+                    self.score += 6
+                elif pairs == 3:
+                    self.score += 12
+                pairs = 0
+            if self.nums[num + 1] == self.nums[num] + 1:
+                currentRun += 1
+            else:
+                currentRun = 1
             if currentRun > maxRun:
                 maxRun = currentRun
         if maxRun > 2:
